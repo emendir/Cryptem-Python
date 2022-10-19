@@ -102,7 +102,6 @@ Sender/Encryptor:
     plaintext = crypt.DecryptFile("/path/to/encrypted/file", "/path/to/decrypted/file") # decrypt file
 
 # Signing
-CURRENTLY SEEMS TO BE BROKEN, ERROR SOURCE IN THE UNDERLYING COINCURVE MODULE  
 Digital cryptographic signing data means creating a signature from and for a piece of data using a certain private key (in this case a password). Anybody can verify that the signature was indeed created using the private key by using the corresponding public key.
 
   Sender/Signer:
