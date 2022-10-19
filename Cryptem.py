@@ -204,4 +204,6 @@ def EncryptFile(plain_file, encrypted_file, public_key):
 
 
 def VerifySignature(data: bytes, public_key: bytes, signature: bytes):
+    if isinstance(public_key, str):
+        public_key = bytes(bytearray.fromhex(public_key))
     return verify_signature(signature, data, public_key)
