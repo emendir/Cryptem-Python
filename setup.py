@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="Cryptem",
-    version="0.0.3",
+    version="0.0.4",
     author="emendir",
     description="Cryptographic applications library based on elliptic curve cryptography",
     long_description=long_description,
