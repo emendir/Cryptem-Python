@@ -130,11 +130,7 @@ class Crypt:
         return hashGen.hexdigest()
 
     def VerifySignature(self, data: bytes, signature: bytes):
-        if isinstance(data, bytearray):
-            data = bytes(data)
-        if isinstance(signature, bytearray):
-            signature = bytes(signature)
-        return verify_signature(signature, data, self.public_key)
+        return VerifySignature(data, self.public_key, signature)
 
 
 class Encryptor:
@@ -213,6 +209,8 @@ def EncryptFile(plain_file, encrypted_file, public_key):
 def VerifySignature(data: bytes, public_key: bytes, signature: bytes):
     if isinstance(public_key, str):
         public_key = bytes(bytearray.fromhex(public_key))
+    elif isinstance(data, bytearray):
+        public_key = bytes(public_key)
     if isinstance(data, bytearray):
         data = bytes(data)
     if isinstance(signature, bytearray):
