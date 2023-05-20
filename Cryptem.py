@@ -66,8 +66,8 @@ class Crypt:
             plaintext = codec2.Decrypt(cipher).decode('utf-8')
     """
 
-    public_key = ""
-    __private_key = ""
+    public_key = ""  # string
+    __private_key = ""  # coincurve.keys.PrivateKey
 
     def __init__(self, password=None):
         if password == None:
@@ -128,6 +128,13 @@ class Crypt:
         hashGen = hashlib.sha256()
         hashGen.update(self.Sign(data))
         return hashGen.hexdigest()
+
+    def VerifySignature(self, data: bytes, signature: bytes):
+        if isinstance(data, bytearray):
+            data = bytes(data)
+        if isinstance(signature, bytearray):
+            signature = bytes(signature)
+        return verify_signature(signature, data, self.public_key)
 
 
 class Encryptor:
@@ -206,4 +213,8 @@ def EncryptFile(plain_file, encrypted_file, public_key):
 def VerifySignature(data: bytes, public_key: bytes, signature: bytes):
     if isinstance(public_key, str):
         public_key = bytes(bytearray.fromhex(public_key))
+    if isinstance(data, bytearray):
+        data = bytes(data)
+    if isinstance(signature, bytearray):
+        signature = bytes(signature)
     return verify_signature(signature, data, public_key)
