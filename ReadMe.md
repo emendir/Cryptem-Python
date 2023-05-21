@@ -1,6 +1,6 @@
 An easy-to-use object-oriented API for working with cryptography: encrypting/decrypting data and files as well as signing data and verifying signatures.  
 Can be used for asymmetric and symmetric cryptography, signature verification, and supports password-like private keys.
-Uses elliptic curve cryptography for the data encryption and data signing, the file encryption however uses AES.  
+Cryptem uses elliptic curve cryptography for the data encryption and data signing, the file encryption however uses AES.  
 Built on the eciespy, cryptography, coincurve and hashlib modules.
 
 ## Classes `Crypt` and `Encryptor`:
@@ -27,17 +27,17 @@ Communication Sender/Encryptor:
     # Object-Oriented Approach:
     from Cryptem import Encryptor
     encryptor = Encryptor(public_key)  # crete Encryptor object with Receiver's public key
-    cipher = encryptor.Encrypt("Hello there!".encode('utf-8')) # encrypt a message
+    cipher = encryptor.encrypt("Hello there!".encode('utf-8')) # encrypt a message
     
     # Functional Approach:
-    cipher = Encrypt("Hello there!".encode('utf-8'), public_key)
+    cipher = encrypt("Hello there!".encode('utf-8'), public_key)
 
   Transmit `cipher` to Receiver.
 
 Communication Receiver:
   
     # continued from above
-    plaintext = crypt.Decrypt(cipher).decode('utf-8') # decrypt message
+    plaintext = crypt.decrypt(cipher).decode('utf-8') # decrypt message
 
 ### - __Multi-Session Asymetric Encryption__ (public-key and private-key):  
 Communication Receiver:
@@ -50,21 +50,21 @@ Give `public_key` to Sender.
 Communication Sender/Encryptor:
     
     encryptor = Encryptor(public_key)  # crete Encryptor object with Receiver's public key
-    cipher = encryptor.Encrypt("Hello there!".encode('utf-8')) # encrypt a message
+    cipher = encryptor.encrypt("Hello there!".encode('utf-8')) # encrypt a message
 
 Transmit `cipher` to Receiver.
 
 Communication Receiver/Decryptor:
 
     # continued from above
-    plaintext = crypt.Decrypt(cipher).decode('utf-8') # decrypt message
+    plaintext = crypt.decrypt(cipher).decode('utf-8') # decrypt message
 
 
 ###  - __Multi-Session Symmetric Enryption__ (private-key only):  
   Sender/Encryptor:
   
       crypt = Crypt("our_password")
-      cipher = crypt.Encrypt("Hello there!".encode('utf-8'))
+      cipher = crypt.encrypt("Hello there!".encode('utf-8'))
   
   SECURELY & PRIVATELY transmit the password to the Receiver (this is the downside and weakness of symmetric encryption).
   
@@ -74,7 +74,7 @@ Communication Receiver/Decryptor:
   
       # continued from aboveplaintext
       crypt = Crypt("our_password")
-      plaintext = crypt.Decrypt(cipher).decode('utf-8')
+      plaintext = crypt.decrypt(cipher).decode('utf-8')
 ## File Encryption:
 Because the encryption technologies used above are rather inefficient when applied to larger quantities of data, the Crypt and Encryptor classes have fcuntions that implement symmetric AES encryption. The secret AES key is encrypted with asymmetric elliptic curve cryptography (exactly as the encryption methods above) and embedded into the file, so that the API user (programmer) need not worry about it, and can use the file encryption functionality in exactly the same way as the bytearray-encryption function above.
 
@@ -89,17 +89,17 @@ Sender/Encryptor:
 
     # Object-Oriented Approach:
     encryptor = Encryptor(public_key)  # crete Encryptor object with Receiver's public key
-    encryptor.EncryptFile("/path/to/file", "/where/to/save/encrypted/file") # encrypt a file
+    encryptor.encrypt_file("/path/to/file", "/where/to/save/encrypted/file") # encrypt a file
 
     # Functional Approach:
-    EncryptFile("/path/to/file", "/where/to/save/encrypted/file", public_key)
+    encrypt_file("/path/to/file", "/where/to/save/encrypted/file", public_key)
 
   Transmit the encrypted file to Receiver.
 
   Communication Receiver:
 
     # continued from above
-    plaintext = crypt.DecryptFile("/path/to/encrypted/file", "/path/to/decrypted/file") # decrypt file
+    plaintext = crypt.decrypt_file("/path/to/encrypted/file", "/path/to/decrypted/file") # decrypt file
 
 # Signing
 Digital cryptographic signing data means creating a signature from and for a piece of data using a certain private key (in this case a password). Anybody can verify that the signature was indeed created using the private key by using the corresponding public key.
@@ -110,14 +110,14 @@ Digital cryptographic signing data means creating a signature from and for a pie
     
     crypt = Crypt("my_password")  # create a Crypt object using a password
     public_key = crypt.public_key # this is the public key you should share with others
-    signature = crypt.Sign(data)  # creating a signature for data
+    signature = crypt.sign(data)  # creating a signature for data
     
   Transmit `data`, `public_key` and `signature` to Receiver/Verifier.
   
   Receiver/Verifier:
   
     encryptor = Encryptor(public_key)
-    assert(encryptor.VerifySignature(data, signature)) # checking the validity of data's signature using the signer's public key
+    assert(encryptor.verify_signature(data, signature)) # checking the validity of data's signature using the signer's public key
     
     
     

@@ -1,11 +1,15 @@
 import setuptools
-
-with open("README.md", "r", encoding="utf-8") as fh:
+import os
+import sys
+sys.path.append(os.path.dirname(__file__))
+if True:    # just to sto my IDE's script formatter moving the following import to the start of the script
+    from __project__ import project_name, version
+with open(os.path.join(os.path.dirname(__file__), "ReadMe.md"), "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="Cryptem",
-    version="0.0.4",
+    name=project_name,
+    version=version,
     author="emendir",
     description="Cryptographic applications library based on elliptic curve cryptography",
     long_description=long_description,
@@ -22,6 +26,6 @@ setuptools.setup(
     # 'package_dir={"": "."},
     packages=setuptools.find_packages(),
     python_requires=">=3.6",
-    py_modules=['Cryptem'],
+    py_modules=['cryptem', 'Cryptem'],
     install_requires=['eciespy', 'coincurve', 'cryptography'],
 )
