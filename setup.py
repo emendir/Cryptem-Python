@@ -18,6 +18,7 @@ setuptools.setup(
 
     project_urls={
         "Source Code on IPFS": "https://ipfs.io/ipns/k2k4r8ld8q6344t8dop0rwuk8f3vhpo42un6zrnrffogaayr7xv59p83",
+        "Github": 'https://github.com/emendir/Cryptem-Python',
     },
     classifiers=[
         "Programming Language :: Python :: 3",
