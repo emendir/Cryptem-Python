@@ -69,16 +69,20 @@ class Crypt:
     public_key = ""  # string
     __private_key = ""  # coincurve.keys.coincurve.PrivateKey
 
-    def __init__(self, password=None):
-        if password == None:
+    def __init__(self, password=None, private_key=None):
+        if not password and not private_key:
             key = generate_key()    # generate new random key
-        else:
+        elif password:
             # creating a cryptographic hash from the password, to create a larger encryption key from it
             hashGen = hashlib.sha256()
             hashGen.update(password.encode())
             hash = hashGen.hexdigest()
 
             key = coincurve.PrivateKey.from_hex(hash)
+        elif private_key:
+            key = coincurve.PrivateKey.from_hex(private_key)
+        else:
+            raise Exception("Specify a password or a private_key, not both.")
 
         self.__private_key = key
         self.public_key = key.public_key.format(False).hex()
@@ -126,6 +130,14 @@ class Crypt:
 
     def verify_signature(self, data: bytes, signature: bytes):
         return verify_signature(data, self.public_key, signature)
+
+    def get_private_key(self):
+        """Returns the private key in hexadecimal format."""
+        return self.__private_key.to_hex()
+
+    def get_public_key(self):
+        """Returns the private key in hexadecimal format."""
+        return self.__private_key.to_hex()
 
 
 class Encryptor:
