@@ -91,42 +91,16 @@ class Crypt:
         return encrypt(data_to_encrypt, self.public_key)
 
     def decrypt(self, encrypted_data: bytearray):
-        try:
-            if(type(encrypted_data) == bytearray):
-                encrypted_data = bytes(encrypted_data)
-            decrypted_data = ecies.decrypt(
-                self.__private_key.to_hex(), encrypted_data)
-            return decrypted_data
-        except Exception as e:
-            print("Failed at decryption.")
-            print(e)
-            print("----------------------------------------------------")
-            traceback.print_exc()  # printing stack trace
-            print("----------------------------------------------------")
-            print("")
-            # print(encrypted_data)
-            return None
+        return decrypt(encrypted_data, self.__private_key)
 
     def encrypt_file(self, plain_file, encrypted_file):
         return encrypt_file(plain_file, encrypted_file, self.public_key)
 
     def decrypt_file(self, encrypted_file, decrypted_file):
-
-        with open(encrypted_file, 'rb') as file:
-            encrypted_data = file.read()
-        key = encrypted_data[:141]   # extract encrypted key from file
-        encrypted_data = encrypted_data[141:]    # remove encrypted key from file
-
-        # decrypt encrypted key and create file-decrypting Fernet object from it
-        f = Fernet(self.decrypt(key))
-
-        decrypted_data = f.decrypt(encrypted_data)  # decrypt file
-
-        with open(decrypted_file, 'wb') as file:
-            file.write(decrypted_data)
+        return decrypt_file(encrypted_file, decrypted_file, self.__private_key)
 
     def sign(self, data: bytes):
-        return self.__private_key.sign(data)
+        return sign(data, self.__private_key)
 
     def verify_signature(self, data: bytes, signature: bytes):
         return verify_signature(data, self.public_key, signature)
@@ -190,6 +164,53 @@ def encrypt(data_to_encrypt: bytearray, public_key):
         return None
 
 
+def decrypt(encrypted_data: bytearray, private_key: bytearray):
+    try:
+        if isinstance(private_key, coincurve.keys.PrivateKey):
+            key = private_key.to_hex()
+        elif isinstance(private_key, bytearray):
+            key = private_key.hex()
+        elif isinstance(private_key, str):
+            key = private_key
+
+        if(type(encrypted_data) == bytearray):
+            encrypted_data = bytes(encrypted_data)
+        decrypted_data = ecies.decrypt(
+            key, encrypted_data)
+        return decrypted_data
+    except Exception as e:
+        print("Failed at decryption.")
+        print(e)
+        print("----------------------------------------------------")
+        traceback.print_exc()  # printing stack trace
+        print("----------------------------------------------------")
+        print("")
+        # print(encrypted_data)
+        return None
+
+
+def sign(data: bytes, private_key: bytearray):
+    if isinstance(private_key, coincurve.keys.PrivateKey):
+        key = private_key
+    elif isinstance(private_key, bytearray):
+        key = coincurve.PrivateKey.from_hex(private_key.hex())
+    elif isinstance(private_key, str):
+        key = coincurve.PrivateKey.from_hex(private_key)
+    return key.sign(data)
+
+
+def verify_signature(data: bytes, public_key: bytes, signature: bytes):
+    if isinstance(public_key, str):
+        public_key = bytes(bytearray.fromhex(public_key))
+    elif isinstance(data, bytearray):
+        public_key = bytes(public_key)
+    if isinstance(data, bytearray):
+        data = bytes(data)
+    if isinstance(signature, bytearray):
+        signature = bytes(signature)
+    return coincurve.verify_signature(signature, data, public_key)
+
+
 def encrypt_file(plain_file, encrypted_file, public_key):
     """
     encrypt a file.
@@ -211,13 +232,17 @@ def encrypt_file(plain_file, encrypted_file, public_key):
         file.write(encrypted_data)
 
 
-def verify_signature(data: bytes, public_key: bytes, signature: bytes):
-    if isinstance(public_key, str):
-        public_key = bytes(bytearray.fromhex(public_key))
-    elif isinstance(data, bytearray):
-        public_key = bytes(public_key)
-    if isinstance(data, bytearray):
-        data = bytes(data)
-    if isinstance(signature, bytearray):
-        signature = bytes(signature)
-    return coincurve.verify_signature(signature, data, public_key)
+def decrypt_file(encrypted_file, decrypted_file, private_key: bytearray):
+
+    with open(encrypted_file, 'rb') as file:
+        encrypted_data = file.read()
+    key = encrypted_data[:141]   # extract encrypted key from file
+    encrypted_data = encrypted_data[141:]    # remove encrypted key from file
+
+    # decrypt encrypted key and create file-decrypting Fernet object from it
+    f = Fernet(decrypt(key, private_key))
+
+    decrypted_data = f.decrypt(encrypted_data)  # decrypt file
+
+    with open(decrypted_file, 'wb') as file:
+        file.write(decrypted_data)
