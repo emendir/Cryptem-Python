@@ -1,5 +1,5 @@
-coincurve==17.0.0
-cryptography==2.8
+coincurve>=17.0.0
+cryptography>=2.8
 eciespy>=0.3.12
-setuptools==45.2.0
-termcolor==2.3.0
+setuptools>=45.2.0
+termcolor?=2.3.0
